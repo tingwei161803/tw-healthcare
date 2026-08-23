@@ -6,12 +6,12 @@
    tiny toolkit on window.LDW that each page's app.js reuses.
 
    Loaded on EVERY page BEFORE app.js. It:
-     1. reads persisted lang/theme (localStorage, sandbox-safe),
+     1. takes the language from <html lang> (one language per URL) and reads the
+        persisted theme (localStorage, sandbox-safe),
      2. injects app bar + nav + footer + dialog around <main id="page">,
-     3. wires the language / theme toggles + GitHub star button,
-     4. highlights the current page (from <body data-page="...">),
-     5. lets app.js register an onLang() callback so a language switch repaints
-        BOTH the chrome AND the page body — nothing is ever left in one language.
+     3. wires the theme toggle + GitHub star button and points the language link
+        at the same page in the other language,
+     4. highlights the current page (from <body data-page="...">).
    ========================================================================= */
 (function () {
   "use strict";
@@ -30,11 +30,36 @@
   function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
   function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) { /* ignore */ } }
 
+  /* ---------- language: decided by the URL, never by storage ----------
+     Each language has its own URL (Chinese at the root, English under /en/),
+     so the page we were served already declares which one it is. A crawler has
+     no localStorage and does not click — reading the language from <html lang>
+     is the only way the language it sees matches the language we declare. */
+  var TWIN_DIR = "en";                 // the non-root language lives under /en/
+
+  function docLang() {
+    var v = (document.documentElement.getAttribute("lang") || "en").toLowerCase();
+    return v.indexOf("zh") === 0 ? "zh" : "en";
+  }
+
+  /* This same page in the other language: add or drop the /en/ prefix. */
+  function altHref() {
+    var p = location.pathname;
+    if (p === "/" + TWIN_DIR) p += "/";
+    return p.indexOf("/" + TWIN_DIR + "/") === 0
+      ? p.slice(TWIN_DIR.length + 1)
+      : "/" + TWIN_DIR + p;
+  }
+
   /* ---------- global state ---------- */
   var state = {
-    lang:  lsGet("lang")  || "en",
+    lang:  docLang(),
     theme: lsGet("theme") || "light"
   };
+
+  var ALT = state.lang === "zh"
+    ? { code: "en",      label: "EN", aria: "View in English / 切換到英文版" }
+    : { code: "zh-Hant", label: "中", aria: "檢視中文版 / View in Chinese" };
 
   /* ---------- helpers shared with app.js ---------- */
   function t(obj) {
@@ -57,10 +82,6 @@
     for (var i = 0; i < PAGES.length; i++) if (PAGES[i].slug === slug) return PAGES[i];
     return PAGES[0] || null;
   }
-
-  /* ---------- onLang callback registry (app.js plugs in here) ---------- */
-  var langSubscribers = [];
-  function onLang(fn) { if (typeof fn === "function") langSubscribers.push(fn); }
 
   /* =======================================================================
      CHROME INJECTION — app bar, nav, footer, dialog around <main id="page">
@@ -91,10 +112,12 @@
             '<span class="material-symbols-rounded">star</span>' +
             '<span class="gh-star__count" id="ghStarCount">★</span>' +
           '</a>' +
-          '<button class="icon-btn" id="langToggle" type="button" title="Language" aria-label="Toggle language / 切換語言">' +
+          '<a class="icon-btn" id="langToggle" href="' + altHref() + '" ' +
+            'hreflang="' + ALT.code + '" rel="alternate" lang="' + ALT.code + '" ' +
+            'title="Language" aria-label="' + ALT.aria + '">' +
             '<span class="material-symbols-rounded">translate</span>' +
-            '<span class="icon-btn__txt" id="langLabel">中</span>' +
-          '</button>' +
+            '<span class="icon-btn__txt" id="langLabel">' + ALT.label + '</span>' +
+          '</a>' +
           '<button class="icon-btn" id="themeToggle" type="button" title="Theme" aria-label="Toggle theme / 切換主題">' +
             '<span class="material-symbols-rounded" id="themeIcon">dark_mode</span>' +
           '</button>' +
@@ -170,7 +193,6 @@
 
   /* ---------- chrome text in the active language ---------- */
   function refreshChrome() {
-    document.documentElement.setAttribute("lang", state.lang);
     var page = currentPage();
     var siteTitle = t(META.title);
     var pageTitle = page ? t(page.title) : "";
@@ -190,7 +212,7 @@
   }
 
   /* =======================================================================
-     THEME + LANGUAGE
+     THEME
      ===================================================================== */
   function applyTheme() {
     document.documentElement.setAttribute("data-theme", state.theme);
@@ -198,23 +220,13 @@
     if (icon) icon.textContent = state.theme === "dark" ? "light_mode" : "dark_mode";
     lsSet("theme", state.theme);
   }
-  function applyLangChrome() {
-    var label = document.getElementById("langLabel");
-    if (label) label.textContent = state.lang === "en" ? "EN" : "中";
-    lsSet("lang", state.lang);
-  }
 
   function wire() {
     document.getElementById("themeToggle").addEventListener("click", function () {
       state.theme = state.theme === "dark" ? "light" : "dark";
       applyTheme();
     });
-    document.getElementById("langToggle").addEventListener("click", function () {
-      state.lang = state.lang === "en" ? "zh" : "en";
-      applyLangChrome();
-      refreshChrome();
-      langSubscribers.forEach(function (fn) { try { fn(state.lang); } catch (e) {} });
-    });
+    /* No language handler: #langToggle is a link to the other language's URL. */
   }
 
   /* =======================================================================
@@ -227,7 +239,6 @@
     lsGet: lsGet, lsSet: lsSet,
     pages: PAGES, meta: META,
     currentPage: currentPage, currentSlug: currentSlug, pageHref: pageHref,
-    onLang: onLang,
     refreshChrome: refreshChrome,
     dialog: function () { return document.getElementById("dialog"); }
   };
@@ -253,7 +264,6 @@
   function init() {
     injectChrome();
     applyTheme();
-    applyLangChrome();
     refreshChrome();
     wire();
     fetchStars();
