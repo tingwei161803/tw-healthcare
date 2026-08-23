@@ -12,7 +12,9 @@
 |---|---|
 | 🌐 網站 | <https://tw-healthcare.peteraim.com/> |
 
-頂部的**跨頁導覽列**可在 15 頁之間切換;每頁皆支援中文 / English 與深 / 淺色,設定跨頁延續,右上角並有到 GitHub 點星星的連結。圖鑑類頁面可用 `#<slug>` 深連結(例如 [`…/software.html`](https://tw-healthcare.peteraim.com/software.html))。
+| 🌐 網站(English) | <https://tw-healthcare.peteraim.com/en/> |
+
+頂部的**跨頁導覽列**可在 15 頁之間切換;中文版在根目錄、English 版在 `/en/`,右上角的語言鈕就是指向同一頁另一語言的連結。深 / 淺色設定跨頁延續,並有到 GitHub 點星星的連結。圖鑑類頁面可用 `#<slug>` 深連結(例如 [`…/software.html`](https://tw-healthcare.peteraim.com/software.html))。
 
 ---
 
@@ -41,7 +43,7 @@
 ## ✨ 功能特色
 
 - 🧭 **跨頁導覽列** — 15 頁一鍵切換,自動高亮目前頁
-- 🌏 **全頁雙語** — 中文 / English 一鍵切換,卡片、詳情、導覽與靜態文案整頁同步、無殘留
+- 🌏 **一語言一網址** — 中文版在根目錄、English 版在 `/en/`,兩邊都是關掉 JS 也讀得到的完整靜態頁,互相以 hreflang 標註;語言由網址決定,不靠瀏覽器記憶
 - 🌗 **深 / 淺色模式** — 醫療專業藍綠(teal)配色,`localStorage` 記憶,跨頁延續
 - 🔍 **搜尋 / 篩選** — 圖鑑頁即時全文搜尋 + 分類 chips;法規/學習路線採長文 + 目錄與閱讀進度
 - 🗂️ **詳情對話框 + 深連結** — 卡片點開看完整介紹,`#<slug>` 可直接分享
@@ -63,17 +65,22 @@ tw-healthcare/
 ├── assets/
 │   ├── styles.css         # MD3 設計 token(淺/深,醫療藍綠)+ 全部版型樣式
 │   ├── games.css          # 遊戲中心外殼 + 共享遊戲 UI 工具 class(.gu-*)
-│   ├── shell.js           # 共用 chrome:appbar(含 GitHub 星數)/ 跨頁 nav / footer / dialog / 語言+主題
+│   ├── shell.js           # 共用 chrome:appbar(含 GitHub 星數)/ 跨頁 nav / footer / dialog / 語言(依網址)+主題
 │   ├── app.js             # 版型引擎:依 body[data-page] 選 renderer 渲染進 #page
 │   └── games/             # 12 支小遊戲模組,每支自我註冊到 window.GAMES、自帶 scoped CSS
 ├── data/
 │   └── data.js            # 唯一資料檔:SITE_META + SITE_PAGES[](每頁載入同一份)
+├── en/                    # English 版的同 15 頁(與中文版一一對應)
+├── sitemap.xml            # 兩種語言共 30 個網址
+├── robots.txt
 ├── CNAME                  # 自訂網域 tw-healthcare.peteraim.com
 ├── .nojekyll
 └── README.md
 ```
 
-> 整站由 `data/data.js` 的 `SITE_PAGES[]` 驅動:每一筆 = 一頁。新增一頁 = 複製一個 `.html`、改 `data-page`、在 `SITE_PAGES` 加一筆。每個可見字串都是 `{en, zh}`,語言切換才能整站重繪。
+> 整站由 `data/data.js` 的 `SITE_PAGES[]` 驅動:每一筆 = 一頁。新增一頁 = 複製一個 `.html`、改 `data-page`、在 `SITE_PAGES` 加一筆。每個可見字串都是 `{en, zh}`,兩個語言版本才能從同一份資料產生。
+>
+> 語言取自 `<html lang>`:中文頁是 `zh-Hant`、`/en/` 底下是 `en`。新增一頁時,兩個語言版本各要有一份 HTML,`<head>` 放同一組三行 hreflang、canonical 各指自己,並把兩個網址都加進 `sitemap.xml`。
 
 ---
 
