@@ -5,6 +5,9 @@
 -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>https://tw-healthcare.peteraim.com/</loc>
+  </url>
+  <url>
     <loc>https://tw-healthcare.peteraim.com/careers.html</loc>
   </url>
   <url>
@@ -17,13 +20,55 @@
     <loc>https://tw-healthcare.peteraim.com/ecosystem.html</loc>
   </url>
   <url>
+    <loc>https://tw-healthcare.peteraim.com/en/</loc>
+  </url>
+  <url>
+    <loc>https://tw-healthcare.peteraim.com/en/careers.html</loc>
+  </url>
+  <url>
+    <loc>https://tw-healthcare.peteraim.com/en/devices.html</loc>
+  </url>
+  <url>
+    <loc>https://tw-healthcare.peteraim.com/en/digital-ai.html</loc>
+  </url>
+  <url>
+    <loc>https://tw-healthcare.peteraim.com/en/ecosystem.html</loc>
+  </url>
+  <url>
+    <loc>https://tw-healthcare.peteraim.com/en/expos.html</loc>
+  </url>
+  <url>
+    <loc>https://tw-healthcare.peteraim.com/en/games.html</loc>
+  </url>
+  <url>
+    <loc>https://tw-healthcare.peteraim.com/en/learn-map.html</loc>
+  </url>
+  <url>
+    <loc>https://tw-healthcare.peteraim.com/en/learn-paths.html</loc>
+  </url>
+  <url>
+    <loc>https://tw-healthcare.peteraim.com/en/learn-resources.html</loc>
+  </url>
+  <url>
+    <loc>https://tw-healthcare.peteraim.com/en/market.html</loc>
+  </url>
+  <url>
+    <loc>https://tw-healthcare.peteraim.com/en/medical-ai.html</loc>
+  </url>
+  <url>
+    <loc>https://tw-healthcare.peteraim.com/en/practice.html</loc>
+  </url>
+  <url>
+    <loc>https://tw-healthcare.peteraim.com/en/regulation.html</loc>
+  </url>
+  <url>
+    <loc>https://tw-healthcare.peteraim.com/en/software.html</loc>
+  </url>
+  <url>
     <loc>https://tw-healthcare.peteraim.com/expos.html</loc>
   </url>
   <url>
     <loc>https://tw-healthcare.peteraim.com/games.html</loc>
-  </url>
-  <url>
-    <loc>https://tw-healthcare.peteraim.com/</loc>
   </url>
   <url>
     <loc>https://tw-healthcare.peteraim.com/learn-map.html</loc>
